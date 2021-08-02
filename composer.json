@@ -1,0 +1,12 @@
+{
+    "name": "ramas/vending-machine",
+    "type": "project",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Ramas",
+            "email": "ramas.developer@gmail.com"
+        }
+    ],
+    "require": {}
+}
