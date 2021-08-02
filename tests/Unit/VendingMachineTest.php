@@ -2,6 +2,7 @@
 
 declare(strict_types=1);
 
+use TDD\VendingMachine;
 use PHPUnit\Framework\TestCase;
 
 class VendingMachineTest extends TestCase
