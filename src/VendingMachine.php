@@ -8,32 +8,32 @@ class VendingMachine
 {
     private $balance;
 
-    public function add($coin): bool
+    public function add(float $coin): bool
     {
-        if($coin === 1) {
-            $this->balance += 1;
+        if($coin === 0.01) {
+            $this->balance += 0.01;
             return true;
         }
 
-        if($coin === 5) {
-            $this->balance += 5;
+        if($coin === 0.05) {
+            $this->balance += 0.05;
             return true;
         }
 
-        if($coin === 20) {
-            $this->balance += 20;
+        if($coin === 0.20) {
+            $this->balance += 0.20;
             return true;
         }
 
-        if($coin === 50) {
-            $this->balance += 50;
+        if($coin === 0.50) {
+            $this->balance += 0.50;
             return true;
         }
 
         return false;
     }
 
-    public function checkBalance()
+    public function checkBalance(): float
     {
         return $this->balance;
     }
