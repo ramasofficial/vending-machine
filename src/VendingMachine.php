@@ -15,6 +15,11 @@ class VendingMachine
             return true;
         }
 
+        if($coin === 5) {
+            $this->balance += 5;
+            return true;
+        }
+
         return false;
     }
 
