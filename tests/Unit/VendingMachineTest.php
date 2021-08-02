@@ -71,4 +71,15 @@ class VendingMachineTest extends TestCase
 
         $this->assertSame(1.00, $balance);
     }
+
+    public function test_vending_machine_shouldnt_accept_2_pence_coin(): void
+    {
+        $add = $this->vendingMachine->add(0.02);
+
+        $this->assertFalse($add);
+        
+        $balance = $this->vendingMachine->checkBalance();
+
+        $this->assertSame(0.00, $balance);
+    }
 }

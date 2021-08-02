@@ -6,7 +6,7 @@ namespace TDD;
 
 class VendingMachine
 {
-    private $balance;
+    private float $balance = 0.00;
 
     public const ALLOWED_COINS = [0.01, 0.05, 0.20, 0.50, 1.00];
 
