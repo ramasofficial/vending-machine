@@ -27,4 +27,15 @@ class VendingMachineTest extends TestCase
 
         $this->assertSame(1, $balance);
     }
+
+    public function test_vending_machine_should_accept_5_pound_coin(): void
+    {
+        $add = $this->vendingMachine->add(5);
+
+        $this->assertTrue($add);
+        
+        $balance = $this->vendingMachine->checkBalance();
+
+        $this->assertSame(5, $balance);
+    }
 }
