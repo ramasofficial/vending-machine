@@ -8,7 +8,13 @@ class VendingMachine
 {
     private float $balance = 0.00;
 
-    public const ALLOWED_COINS = [0.01, 0.05, 0.20, 0.50, 1.00];
+    public const ALLOWED_COINS = [
+        'ONE_PENCE' => 0.01,
+        'FIVE_PENCE' => 0.05,
+        'TWENTY_PENCE' => 0.20,
+        'FIFTY_PENCE' => 0.50,
+        'ONE_POUND' => 1.00
+    ];
 
     public function add(float $coin): bool
     {
