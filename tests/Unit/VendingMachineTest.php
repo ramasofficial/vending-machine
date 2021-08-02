@@ -111,7 +111,7 @@ class VendingMachineTest extends TestCase
         $this->vendingMachine->add(VendingMachine::ALLOWED_COINS['ONE_PENCE']);
         $this->vendingMachine->add(VendingMachine::ALLOWED_COINS['FIVE_PENCE']);
 
-        $balance = $this->vendingMachine->checkBalance(1);
+        $balance = $this->vendingMachine->checkPenceBalance();
 
         $this->assertSame(6, $balance);
     }

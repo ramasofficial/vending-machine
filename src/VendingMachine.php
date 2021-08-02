@@ -32,6 +32,11 @@ class VendingMachine
         return $this->balance;
     }
 
+    public function checkPenceBalance(): int
+    {
+        return (int) ($this->balance * 100);
+    }
+
     private function doesCoinAccept(float $coin): bool
     {
         return in_array($coin, self::ALLOWED_COINS);
