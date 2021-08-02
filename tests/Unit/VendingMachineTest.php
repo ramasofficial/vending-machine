@@ -95,4 +95,24 @@ class VendingMachineTest extends TestCase
 
         $this->assertSame(1.76, $balance);
     }
+
+    public function test_vending_machine_return_balance_in_pounds(): void
+    {
+        $this->vendingMachine->add(VendingMachine::ALLOWED_COINS['ONE_PENCE']);
+        $this->vendingMachine->add(VendingMachine::ALLOWED_COINS['FIVE_PENCE']);
+
+        $balance = $this->vendingMachine->checkBalance();
+
+        $this->assertSame(0.06, $balance);
+    }
+
+    public function test_vending_machine_return_balance_in_pence(): void
+    {
+        $this->vendingMachine->add(VendingMachine::ALLOWED_COINS['ONE_PENCE']);
+        $this->vendingMachine->add(VendingMachine::ALLOWED_COINS['FIVE_PENCE']);
+
+        $balance = $this->vendingMachine->checkBalance(1);
+
+        $this->assertSame(6, $balance);
+    }
 }
