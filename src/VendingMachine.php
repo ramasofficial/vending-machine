@@ -20,6 +20,11 @@ class VendingMachine
             return true;
         }
 
+        if($coin === 20) {
+            $this->balance += 20;
+            return true;
+        }
+
         return false;
     }
 
