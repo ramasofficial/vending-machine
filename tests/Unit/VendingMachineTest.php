@@ -82,4 +82,17 @@ class VendingMachineTest extends TestCase
 
         $this->assertSame(0.00, $balance);
     }
+
+    public function test_vending_machine_should_accept_coins_multiple_times(): void
+    {
+        $this->vendingMachine->add(0.01);
+        $this->vendingMachine->add(0.05);
+        $this->vendingMachine->add(0.20);
+        $this->vendingMachine->add(0.50);
+        $this->vendingMachine->add(1.00);
+
+        $balance = $this->vendingMachine->checkBalance();
+
+        $this->assertSame(1.76, $balance);
+    }
 }
