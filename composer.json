@@ -8,11 +8,17 @@
             "email": "ramas.developer@gmail.com"
         }
     ],
-    "require": {},
     "autoload": {
         "psr-4": {"TDD\\": "src/"}
     },
     "autoload-dev": {
         "psr-4": {"Test\\": "tests/"}
+    },
+    "require-dev": {
+        "phpunit/phpunit": "9"
+    },
+    "scripts": {
+        "test": "phpunit",
+        "tests": "phpunit"
     }
 }
