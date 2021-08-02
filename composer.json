@@ -8,5 +8,11 @@
             "email": "ramas.developer@gmail.com"
         }
     ],
-    "require": {}
+    "require": {},
+    "autoload": {
+        "psr-4": {"TDD\\": "src/"}
+    },
+    "autoload-dev": {
+        "psr-4": {"Test\\": "tests/"}
+    }
 }
