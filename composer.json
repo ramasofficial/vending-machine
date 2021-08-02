@@ -18,7 +18,7 @@
         "phpunit/phpunit": "9"
     },
     "scripts": {
-        "test": "phpunit",
-        "tests": "phpunit"
+        "test": "phpunit tests/Unit",
+        "tests": "phpunit tests/Unit"
     }
 }
