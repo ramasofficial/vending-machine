@@ -30,6 +30,11 @@ class VendingMachine
             return true;
         }
 
+        if($coin === 1.00) {
+            $this->balance += 1.00;
+            return true;
+        }
+
         return false;
     }
 
