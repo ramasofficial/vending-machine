@@ -8,7 +8,7 @@ use InvalidArgumentException;
 
 class VendingMachine
 {
-    private float $balance = 0.00;
+    private int $balance = 0;
 
     public const PRODUCTS = [
         10 => 'Candy',
@@ -19,17 +19,24 @@ class VendingMachine
     ];
 
     public const ALLOWED_COINS = [
-        'ONE_PENCE' => 0.01,
-        'FIVE_PENCE' => 0.05,
-        'TWENTY_PENCE' => 0.20,
-        'FIFTY_PENCE' => 0.50,
-        'ONE_POUND' => 1.00
+        'ONE_PENCE' => 1,
+        'FIVE_PENCE' => 5,
+        'TWENTY_PENCE' => 20,
+        'FIFTY_PENCE' => 50,
+        'ONE_POUND' => 1,
     ];
 
-    public function add(float $coin): bool
+    public function add(int $coin, $type = 'pence'): bool
     {
         if($this->doesCoinAccept($coin)) {
-            $this->balance += $coin;
+
+            if($type === 'pound') {
+                $this->balance += $coin * 100;
+            }
+
+            if($type === 'pence') {
+                $this->balance += $coin;
+            }
 
             return true;
         }
@@ -37,14 +44,9 @@ class VendingMachine
         return false;
     }
 
-    public function checkBalance(): float
+    public function checkBalance(): int
     {
         return $this->balance;
-    }
-
-    public function checkPenceBalance(): int
-    {
-        return (int) ($this->balance * 100);
     }
 
     private function doesCoinAccept(float $coin): bool
@@ -58,11 +60,13 @@ class VendingMachine
             throw new InvalidArgumentException('User does not have enough money to buy this product!');
         }
 
+        $this->balance = $this->checkBalance() - $pences;
+
         return self::PRODUCTS[(int) $pences];
     }
 
     private function haveEnoughMoney(int $pences): bool
     {
-        return $this->checkPenceBalance() >= $pences;
+        return $this->checkBalance() >= $pences;
     }
 }
