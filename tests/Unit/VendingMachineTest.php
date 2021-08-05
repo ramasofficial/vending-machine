@@ -141,4 +141,16 @@ class VendingMachineTest extends TestCase
 
         $this->vendingMachine->selectProduct(self::CANDY);
     }
+
+    public function test_reduce_vending_machine_balance_after_user_bought_product()
+    {
+        $this->vendingMachine->add(VendingMachine::ALLOWED_COINS['FIVE_PENCE']);
+        $this->vendingMachine->add(VendingMachine::ALLOWED_COINS['FIVE_PENCE']);
+
+        $this->vendingMachine->selectProduct(self::CANDY);
+
+        $balance = $this->vendingMachine->checkPenceBalance();
+
+        $this->assertSame(0, $balance);
+    }
 }
