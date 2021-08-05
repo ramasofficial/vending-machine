@@ -54,11 +54,15 @@ class VendingMachine
 
     public function selectProduct(int $pences): ?string
     {
-        if($this->checkPenceBalance() >= $pences)
-        {
-            return self::PRODUCTS[(int) $pences];
-        } else {
+        if(!$this->haveEnoughMoney($pences)) {
             throw new InvalidArgumentException('User does not have enough money to buy this product!');
         }
+
+        return self::PRODUCTS[(int) $pences];
+    }
+
+    private function haveEnoughMoney(int $pences): bool
+    {
+        return $this->checkPenceBalance() >= $pences;
     }
 }

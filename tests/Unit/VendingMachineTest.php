@@ -10,6 +10,7 @@ use PHPUnit\Framework\TestCase;
 
 class VendingMachineTest extends TestCase
 {
+    public const CANDY = 10;
     private VendingMachine $vendingMachine;
 
     protected function setUp(): void
@@ -126,9 +127,9 @@ class VendingMachineTest extends TestCase
         $this->vendingMachine->add(VendingMachine::ALLOWED_COINS['FIVE_PENCE']);
         $this->vendingMachine->add(VendingMachine::ALLOWED_COINS['FIVE_PENCE']);
 
-        $product = $this->vendingMachine->selectProduct(10);
+        $product = $this->vendingMachine->selectProduct(self::CANDY);
 
-        $this->assertSame(VendingMachine::PRODUCTS[10], $product);
+        $this->assertSame(VendingMachine::PRODUCTS[self::CANDY], $product);
     }
 
     public function test_user_dont_have_enough_money_to_buy_product()
@@ -138,6 +139,6 @@ class VendingMachineTest extends TestCase
 
         $this->vendingMachine->add(VendingMachine::ALLOWED_COINS['FIVE_PENCE']);
 
-        $this->vendingMachine->selectProduct(10);
+        $this->vendingMachine->selectProduct(self::CANDY);
     }
 }
