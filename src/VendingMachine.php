@@ -10,6 +10,14 @@ class VendingMachine
 {
     private float $balance = 0.00;
 
+    public const PRODUCTS = [
+        10 => 'Candy',
+        50 => 'SNACKS',
+        75 => 'NUTS',
+        100 => 'BOTTLE WATER',
+        150 => 'COKE',
+    ];
+
     public const ALLOWED_COINS = [
         'ONE_PENCE' => 0.01,
         'FIVE_PENCE' => 0.05,
@@ -44,11 +52,11 @@ class VendingMachine
         return in_array($coin, self::ALLOWED_COINS);
     }
 
-    public function selectProduct(int $pences): ?bool
+    public function selectProduct(int $pences): ?string
     {
         if($this->checkPenceBalance() >= $pences)
         {
-            return true;
+            return self::PRODUCTS[(int) $pences];
         } else {
             throw new InvalidArgumentException('User does not have enough money to buy this product!');
         }
