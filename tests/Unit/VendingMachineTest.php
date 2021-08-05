@@ -128,7 +128,7 @@ class VendingMachineTest extends TestCase
 
         $product = $this->vendingMachine->selectProduct(10);
 
-        $this->assertTrue($product);
+        $this->assertSame(VendingMachine::PRODUCTS[10], $product);
     }
 
     public function test_user_dont_have_enough_money_to_buy_product()
