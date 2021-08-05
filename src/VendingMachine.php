@@ -41,4 +41,12 @@ class VendingMachine
     {
         return in_array($coin, self::ALLOWED_COINS);
     }
+
+    public function selectProduct(int $pences): ?bool
+    {
+        if($this->checkPenceBalance() >= $pences)
+        {
+            return true;
+        }
+    }
 }
