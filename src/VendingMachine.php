@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace TDD;
 
+use InvalidArgumentException;
+
 class VendingMachine
 {
     private float $balance = 0.00;
@@ -47,6 +49,8 @@ class VendingMachine
         if($this->checkPenceBalance() >= $pences)
         {
             return true;
+        } else {
+            throw new InvalidArgumentException('User does not have enough money to buy this product!');
         }
     }
 }
