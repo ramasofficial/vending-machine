@@ -11,6 +11,7 @@ use PHPUnit\Framework\TestCase;
 class VendingMachineTest extends TestCase
 {
     public const CANDY = 10;
+    public const ONE_POUND_TO_PENCES = 100;
     private VendingMachine $vendingMachine;
 
     protected function setUp(): void
@@ -75,7 +76,7 @@ class VendingMachineTest extends TestCase
         
         $balance = $this->vendingMachine->checkBalance();
 
-        $this->assertSame(100, $balance);
+        $this->assertSame(self::ONE_POUND_TO_PENCES, $balance);
     }
 
     public function test_vending_machine_should_not_accept_2_pence_coin(): void
