@@ -7,6 +7,8 @@ use PHPUnit\Framework\TestCase;
 
 class VendingMachineTest extends TestCase
 {
+    private VendingMachine $vendingMachine;
+
     protected function setUp(): void
     {
         $this->vendingMachine = new VendingMachine();
@@ -114,5 +116,15 @@ class VendingMachineTest extends TestCase
         $balance = $this->vendingMachine->checkPenceBalance();
 
         $this->assertSame(6, $balance);
+    }
+
+    public function test_user_can_select_product_in_pences()
+    {
+        $this->vendingMachine->add(VendingMachine::ALLOWED_COINS['FIVE_PENCE']);
+        $this->vendingMachine->add(VendingMachine::ALLOWED_COINS['FIVE_PENCE']);
+
+        $product = $this->vendingMachine->selectProduct(10);
+
+        $this->assertTrue($product);
     }
 }
