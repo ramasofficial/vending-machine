@@ -122,7 +122,7 @@ class VendingMachineTest extends TestCase
         $this->assertSame(6, $balance);
     }
 
-    public function test_user_can_select_product_in_pences()
+    public function test_user_can_select_product_in_pences_and_vending_machine_returns_selected_product()
     {
         $this->vendingMachine->add(VendingMachine::ALLOWED_COINS['FIVE_PENCE']);
         $this->vendingMachine->add(VendingMachine::ALLOWED_COINS['FIVE_PENCE']);
