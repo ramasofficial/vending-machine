@@ -187,4 +187,19 @@ class VendingMachineTest extends TestCase
 
         $this->assertArrayHasKey('balance', $product);
     }
+    
+    public function test_vending_machine_can_be_reseted()
+    {
+        $this->vendingMachine->add(VendingMachine::ALLOWED_COINS['pound']['ONE_POUND'], 'pound');
+
+        $reset = $this->vendingMachine->reset();
+
+        $this->assertContains(100, $reset);
+
+        $this->assertArrayHasKey('balance', $reset);
+
+        $balance = $this->vendingMachine->checkBalance();
+
+        $this->assertSame(0, $balance);
+    }
 }

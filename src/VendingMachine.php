@@ -85,4 +85,11 @@ class VendingMachine
 
         return $balance;
     }
+
+    public function reset(): ?array
+    {
+        return [
+            'balance' => $this->refund()
+        ];
+    }
 }
