@@ -170,4 +170,21 @@ class VendingMachineTest extends TestCase
 
         $this->assertSame(0, $balance);
     }
+
+    public function test_vending_machine_return_selected_product_and_remaining_change()
+    {
+        $this->vendingMachine->add(VendingMachine::ALLOWED_COINS['pence']['FIVE_PENCE']);
+        $this->vendingMachine->add(VendingMachine::ALLOWED_COINS['pence']['FIVE_PENCE']);
+        $this->vendingMachine->add(VendingMachine::ALLOWED_COINS['pound']['ONE_POUND'], 'pound');
+
+        $product = $this->vendingMachine->selectProduct(self::CANDY);
+
+        $this->assertContains(VendingMachine::PRODUCTS[self::CANDY], $product);
+
+        $this->assertArrayHasKey('selected_product', $product);
+
+        $this->assertContains(100, $product);
+
+        $this->assertArrayHasKey('balance', $product);
+    }
 }

@@ -67,7 +67,8 @@ class VendingMachine
         $this->balance = $this->checkBalance() - $pences;
 
         return [
-            'selected_product' => self::PRODUCTS[(int) $pences]
+            'selected_product' => self::PRODUCTS[(int) $pences],
+            'balance' => $this->checkBalance()
         ];
     }
 
