@@ -9,22 +9,22 @@ use TDD\Repositories\ProductRepositoryInterface;
 
 class VendingMachine
 {
-    private AddCoinInterface $addCoin;
+    private AddCoinInterface $coin;
 
     private BalanceInterface $balance;
 
     private ProductRepositoryInterface $repository;
 
-    public function __construct(AddCoinInterface $addCoin, BalanceInterface $balance, ProductRepositoryInterface $repository)
+    public function __construct(AddCoinInterface $coin, BalanceInterface $balance, ProductRepositoryInterface $repository)
     {
-        $this->addCoin = $addCoin;
+        $this->coin = $coin;
         $this->balance = $balance;
         $this->repository = $repository;
     }
 
     public function add(int $coin, $type = 'pence'): bool
     {
-        return $this->addCoin->add($coin, $type);
+        return $this->coin->add($coin, $type);
     }
 
     public function checkBalance(): int
