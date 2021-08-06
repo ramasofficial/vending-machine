@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace TDD;
 
-class AddCoin
+class AddCoin implements AddCoinInterface
 {
     private BalanceInterface $balance;
 
