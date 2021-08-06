@@ -19,16 +19,20 @@ class VendingMachine
     ];
 
     public const ALLOWED_COINS = [
-        'ONE_PENCE' => 1,
-        'FIVE_PENCE' => 5,
-        'TWENTY_PENCE' => 20,
-        'FIFTY_PENCE' => 50,
-        'ONE_POUND' => 1,
+        'pence' => [
+            'ONE_PENCE' => 1,
+            'FIVE_PENCE' => 5,
+            'TWENTY_PENCE' => 20,
+            'FIFTY_PENCE' => 50,
+        ],
+        'pound' => [
+            'ONE_POUND' => 1,
+        ],
     ];
 
     public function add(int $coin, $type = 'pence'): bool
     {
-        if($this->doesCoinAccept($coin)) {
+        if($this->doesCoinAccept($coin, $type)) {
 
             if($type === 'pound') {
                 $this->balance += $coin * 100;
@@ -49,9 +53,9 @@ class VendingMachine
         return $this->balance;
     }
 
-    private function doesCoinAccept(float $coin): bool
+    private function doesCoinAccept(float $coin, string $type): bool
     {
-        return in_array($coin, self::ALLOWED_COINS);
+        return in_array($coin, self::ALLOWED_COINS[$type]);
     }
 
     public function selectProduct(int $pences): ?string
@@ -68,5 +72,14 @@ class VendingMachine
     private function haveEnoughMoney(int $pences): bool
     {
         return $this->checkBalance() >= $pences;
+    }
+
+    public function refund(): int
+    {
+        $balance = $this->balance;
+
+        $this->balance = 0;
+
+        return $balance;
     }
 }

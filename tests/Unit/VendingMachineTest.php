@@ -26,51 +26,51 @@ class VendingMachineTest extends TestCase
 
     public function test_vending_machine_should_accept_1_pence_coin(): void
     {
-        $add = $this->vendingMachine->add(VendingMachine::ALLOWED_COINS['ONE_PENCE']);
+        $add = $this->vendingMachine->add(VendingMachine::ALLOWED_COINS['pence']['ONE_PENCE']);
 
         $this->assertTrue($add);
         
         $balance = $this->vendingMachine->checkBalance();
 
-        $this->assertSame(VendingMachine::ALLOWED_COINS['ONE_PENCE'], $balance);
+        $this->assertSame(VendingMachine::ALLOWED_COINS['pence']['ONE_PENCE'], $balance);
     }
 
     public function test_vending_machine_should_accept_5_pence_coin(): void
     {
-        $add = $this->vendingMachine->add(VendingMachine::ALLOWED_COINS['FIVE_PENCE']);
+        $add = $this->vendingMachine->add(VendingMachine::ALLOWED_COINS['pence']['FIVE_PENCE']);
 
         $this->assertTrue($add);
         
         $balance = $this->vendingMachine->checkBalance();
 
-        $this->assertSame(VendingMachine::ALLOWED_COINS['FIVE_PENCE'], $balance);
+        $this->assertSame(VendingMachine::ALLOWED_COINS['pence']['FIVE_PENCE'], $balance);
     }
 
     public function test_vending_machine_should_accept_20_pence_coin(): void
     {
-        $add = $this->vendingMachine->add(VendingMachine::ALLOWED_COINS['TWENTY_PENCE']);
+        $add = $this->vendingMachine->add(VendingMachine::ALLOWED_COINS['pence']['TWENTY_PENCE']);
 
         $this->assertTrue($add);
         
         $balance = $this->vendingMachine->checkBalance();
 
-        $this->assertSame(VendingMachine::ALLOWED_COINS['TWENTY_PENCE'], $balance);
+        $this->assertSame(VendingMachine::ALLOWED_COINS['pence']['TWENTY_PENCE'], $balance);
     }
 
     public function test_vending_machine_should_accept_50_pence_coin(): void
     {
-        $add = $this->vendingMachine->add(VendingMachine::ALLOWED_COINS['FIFTY_PENCE']);
+        $add = $this->vendingMachine->add(VendingMachine::ALLOWED_COINS['pence']['FIFTY_PENCE']);
 
         $this->assertTrue($add);
         
         $balance = $this->vendingMachine->checkBalance();
 
-        $this->assertSame(VendingMachine::ALLOWED_COINS['FIFTY_PENCE'], $balance);
+        $this->assertSame(VendingMachine::ALLOWED_COINS['pence']['FIFTY_PENCE'], $balance);
     }
 
     public function test_vending_machine_should_accept_1_pound_coin(): void
     {
-        $add = $this->vendingMachine->add(VendingMachine::ALLOWED_COINS['ONE_POUND'], 'pound');
+        $add = $this->vendingMachine->add(VendingMachine::ALLOWED_COINS['pound']['ONE_POUND'], 'pound');
 
         $this->assertTrue($add);
         
@@ -92,11 +92,11 @@ class VendingMachineTest extends TestCase
 
     public function test_vending_machine_should_accept_coins_multiple_times(): void
     {
-        $this->vendingMachine->add(VendingMachine::ALLOWED_COINS['ONE_PENCE']);
-        $this->vendingMachine->add(VendingMachine::ALLOWED_COINS['FIVE_PENCE']);
-        $this->vendingMachine->add(VendingMachine::ALLOWED_COINS['TWENTY_PENCE']);
-        $this->vendingMachine->add(VendingMachine::ALLOWED_COINS['FIFTY_PENCE']);
-        $this->vendingMachine->add(VendingMachine::ALLOWED_COINS['ONE_POUND'], 'pound');
+        $this->vendingMachine->add(VendingMachine::ALLOWED_COINS['pence']['ONE_PENCE']);
+        $this->vendingMachine->add(VendingMachine::ALLOWED_COINS['pence']['FIVE_PENCE']);
+        $this->vendingMachine->add(VendingMachine::ALLOWED_COINS['pence']['TWENTY_PENCE']);
+        $this->vendingMachine->add(VendingMachine::ALLOWED_COINS['pence']['FIFTY_PENCE']);
+        $this->vendingMachine->add(VendingMachine::ALLOWED_COINS['pound']['ONE_POUND'], 'pound');
 
         $balance = $this->vendingMachine->checkBalance();
 
@@ -105,9 +105,9 @@ class VendingMachineTest extends TestCase
 
     public function test_vending_machine_return_balance_in_pence(): void
     {
-        $this->vendingMachine->add(VendingMachine::ALLOWED_COINS['ONE_PENCE']);
-        $this->vendingMachine->add(VendingMachine::ALLOWED_COINS['FIVE_PENCE']);
-        $this->vendingMachine->add(VendingMachine::ALLOWED_COINS['ONE_POUND'], 'pound');
+        $this->vendingMachine->add(VendingMachine::ALLOWED_COINS['pence']['ONE_PENCE']);
+        $this->vendingMachine->add(VendingMachine::ALLOWED_COINS['pence']['FIVE_PENCE']);
+        $this->vendingMachine->add(VendingMachine::ALLOWED_COINS['pound']['ONE_POUND'], 'pound');
 
         $balance = $this->vendingMachine->checkBalance();
 
@@ -116,8 +116,8 @@ class VendingMachineTest extends TestCase
 
     public function test_user_can_select_product_in_pences_and_vending_machine_returns_selected_product()
     {
-        $this->vendingMachine->add(VendingMachine::ALLOWED_COINS['FIVE_PENCE']);
-        $this->vendingMachine->add(VendingMachine::ALLOWED_COINS['FIVE_PENCE']);
+        $this->vendingMachine->add(VendingMachine::ALLOWED_COINS['pence']['FIVE_PENCE']);
+        $this->vendingMachine->add(VendingMachine::ALLOWED_COINS['pence']['FIVE_PENCE']);
 
         $product = $this->vendingMachine->selectProduct(self::CANDY);
 
@@ -129,21 +129,43 @@ class VendingMachineTest extends TestCase
         $this->expectException(InvalidArgumentException::class);
         $this->expectExceptionMessage('User does not have enough money to buy this product!');
 
-        $this->vendingMachine->add(VendingMachine::ALLOWED_COINS['FIVE_PENCE']);
+        $this->vendingMachine->add(VendingMachine::ALLOWED_COINS['pence']['FIVE_PENCE']);
 
         $this->vendingMachine->selectProduct(self::CANDY);
     }
 
     public function test_reduce_vending_machine_balance_after_user_bought_product()
     {
-        $this->vendingMachine->add(VendingMachine::ALLOWED_COINS['FIVE_PENCE']);
-        $this->vendingMachine->add(VendingMachine::ALLOWED_COINS['FIVE_PENCE']);
-        $this->vendingMachine->add(VendingMachine::ALLOWED_COINS['FIVE_PENCE']);
+        $this->vendingMachine->add(VendingMachine::ALLOWED_COINS['pence']['FIVE_PENCE']);
+        $this->vendingMachine->add(VendingMachine::ALLOWED_COINS['pence']['FIVE_PENCE']);
+        $this->vendingMachine->add(VendingMachine::ALLOWED_COINS['pence']['FIVE_PENCE']);
 
         $this->vendingMachine->selectProduct(self::CANDY);
 
         $balance = $this->vendingMachine->checkBalance();
 
         $this->assertSame(5, $balance);
+    }
+
+    public function test_user_can_get_refund_if_canceling_request()
+    {
+        $this->vendingMachine->add(VendingMachine::ALLOWED_COINS['pence']['FIVE_PENCE']);
+        $this->vendingMachine->add(VendingMachine::ALLOWED_COINS['pence']['FIVE_PENCE']);
+
+        $refund = $this->vendingMachine->refund();
+
+        $this->assertSame(10, $refund);
+    }
+
+    public function test_vending_machine_is_empty_balance_if_user_took_refund()
+    {
+        $this->vendingMachine->add(VendingMachine::ALLOWED_COINS['pence']['FIVE_PENCE']);
+        $this->vendingMachine->add(VendingMachine::ALLOWED_COINS['pence']['FIVE_PENCE']);
+
+        $this->vendingMachine->refund();
+
+        $balance = $this->vendingMachine->checkBalance();
+
+        $this->assertSame(0, $balance);
     }
 }
