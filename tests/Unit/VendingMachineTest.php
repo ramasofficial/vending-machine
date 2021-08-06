@@ -54,7 +54,7 @@ class VendingMachineTest extends TestCase
         $this->assertInstanceOf(ProductRepository::class, $this->repository);
     }
 
-    public function test_can_add_coin_to_vending_machine()
+    public function test_can_add_coin_to_vending_machine(): void
     {
         $this->vendingMachine->add(AddCoin::ALLOWED_COINS[self::PENCE]['TWENTY_PENCE']);
 
@@ -63,7 +63,7 @@ class VendingMachineTest extends TestCase
         $this->assertSame(AddCoin::ALLOWED_COINS[self::PENCE]['TWENTY_PENCE'], $balance);
     }
 
-    public function test_can_check_balance_in_vending_machine()
+    public function test_can_check_balance_in_vending_machine(): void
     {
         $this->vendingMachine->add(AddCoin::ALLOWED_COINS[self::PENCE]['TWENTY_PENCE']);
         $this->vendingMachine->add(AddCoin::ALLOWED_COINS[self::PENCE]['TWENTY_PENCE']);
@@ -73,7 +73,7 @@ class VendingMachineTest extends TestCase
         $this->assertSame(self::FORTY, $balance);
     }
 
-    public function test_user_can_select_product_and_vending_machine_returns_selected_product()
+    public function test_user_can_select_product_and_vending_machine_returns_selected_product(): void
     {
         $this->vendingMachine->add(AddCoin::ALLOWED_COINS[self::PENCE]['TWENTY_PENCE']);
         $this->vendingMachine->add(AddCoin::ALLOWED_COINS[self::PENCE]['TWENTY_PENCE']);
@@ -85,7 +85,7 @@ class VendingMachineTest extends TestCase
         $this->assertArrayHasKey('selected_product', $product);
     }
 
-    public function test_user_can_select_multiple_products_with_existing_balance()
+    public function test_user_can_select_multiple_products_with_existing_balance(): void
     {
         $this->vendingMachine->add(AddCoin::ALLOWED_COINS[self::PENCE]['FIFTY_PENCE']);
         $this->vendingMachine->add(AddCoin::ALLOWED_COINS[self::PENCE]['FIFTY_PENCE']);
@@ -98,7 +98,7 @@ class VendingMachineTest extends TestCase
         $this->assertSame(self::FORTY, $refund);
     }
 
-    public function test_user_dont_have_enough_money_to_buy_product()
+    public function test_user_dont_have_enough_money_to_buy_product(): void
     {
         $this->expectException(InvalidArgumentException::class);
         $this->expectExceptionMessage('User does not have enough money to buy this product!');
@@ -108,7 +108,7 @@ class VendingMachineTest extends TestCase
         $this->vendingMachine->selectProduct(self::CANDY);
     }
 
-    public function test_reduce_vending_machine_balance_after_user_bought_product()
+    public function test_reduce_vending_machine_balance_after_user_bought_product(): void
     {
         $this->vendingMachine->add(AddCoin::ALLOWED_COINS[self::PENCE]['FIVE_PENCE']);
         $this->vendingMachine->add(AddCoin::ALLOWED_COINS[self::PENCE]['FIVE_PENCE']);
@@ -121,7 +121,7 @@ class VendingMachineTest extends TestCase
         $this->assertSame(5, $balance);
     }
 
-    public function test_user_can_get_refund_if_canceling_request()
+    public function test_user_can_get_refund_if_canceling_request(): void
     {
         $this->vendingMachine->add(AddCoin::ALLOWED_COINS[self::PENCE]['FIVE_PENCE']);
         $this->vendingMachine->add(AddCoin::ALLOWED_COINS[self::PENCE]['FIVE_PENCE']);
@@ -131,7 +131,7 @@ class VendingMachineTest extends TestCase
         $this->assertSame(10, $refund);
     }
 
-    public function test_vending_machine_is_empty_balance_if_user_took_refund()
+    public function test_vending_machine_is_empty_balance_if_user_took_refund(): void
     {
         $this->vendingMachine->add(AddCoin::ALLOWED_COINS[self::PENCE]['FIVE_PENCE']);
         $this->vendingMachine->add(AddCoin::ALLOWED_COINS[self::PENCE]['FIVE_PENCE']);
@@ -143,7 +143,7 @@ class VendingMachineTest extends TestCase
         $this->assertSame(self::ZERO_BALANCE, $balance);
     }
 
-    public function test_vending_machine_return_selected_product_and_remaining_change()
+    public function test_vending_machine_return_selected_product_and_remaining_change(): void
     {
         $this->vendingMachine->add(AddCoin::ALLOWED_COINS[self::PENCE]['FIVE_PENCE']);
         $this->vendingMachine->add(AddCoin::ALLOWED_COINS[self::PENCE]['FIVE_PENCE']);
@@ -160,7 +160,7 @@ class VendingMachineTest extends TestCase
         $this->assertArrayHasKey('balance', $product);
     }
 
-    public function test_vending_machine_can_be_reset()
+    public function test_vending_machine_can_be_reset(): void
     {
         $this->vendingMachine->add(AddCoin::ALLOWED_COINS[self::POUND]['ONE_POUND'], self::POUND);
 
