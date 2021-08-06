@@ -121,7 +121,9 @@ class VendingMachineTest extends TestCase
 
         $product = $this->vendingMachine->selectProduct(self::CANDY);
 
-        $this->assertSame(VendingMachine::PRODUCTS[self::CANDY], $product);
+        $this->assertContains(VendingMachine::PRODUCTS[self::CANDY], $product);
+
+        $this->assertArrayHasKey('selected_product', $product);
     }
 
     public function test_user_dont_have_enough_money_to_buy_product()

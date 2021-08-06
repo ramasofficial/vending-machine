@@ -58,7 +58,7 @@ class VendingMachine
         return in_array($coin, self::ALLOWED_COINS[$type]);
     }
 
-    public function selectProduct(int $pences): ?string
+    public function selectProduct(int $pences): ?array
     {
         if(!$this->haveEnoughMoney($pences)) {
             throw new InvalidArgumentException('User does not have enough money to buy this product!');
@@ -66,7 +66,9 @@ class VendingMachine
 
         $this->balance = $this->checkBalance() - $pences;
 
-        return self::PRODUCTS[(int) $pences];
+        return [
+            'selected_product' => self::PRODUCTS[(int) $pences]
+        ];
     }
 
     private function haveEnoughMoney(int $pences): bool
