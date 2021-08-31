@@ -10,3 +10,8 @@ composer install
 ```
 composer test or composer tests
 ```
+
+# Create development server
+```
+$ php -S localhost:8000 -t public/
+```

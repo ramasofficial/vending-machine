@@ -4,26 +4,32 @@ declare(strict_types=1);
 
 namespace TDD;
 
+use TDD\Client\ClientInterface;
+
 class Balance implements BalanceInterface
 {
     private int $balance = 0;
+    private ClientInterface $client;
+
+    public function __construct(ClientInterface $client)
+    {
+        $this->client = $client;
+    }
 
     public function addBalance(int $number): bool
     {
-        $this->balance += $number;
+        $this->client->addBalance($number);
 
         return true;
     }
 
-    public function setBalance(int $number): bool
+    public function setBalance(int $number): ?array
     {
-        $this->balance = $number;
-
-        return true;
+        return $this->client->refund()->toArray();
     }
 
     public function getBalance(): int
     {
-        return $this->balance;
+        return $this->client->getBalance()->toArray()['balance'];
     }
 }

@@ -4,9 +4,11 @@ declare(strict_types=1);
 
 namespace Test\Unit;
 
+use Dotenv\Dotenv;
 use InvalidArgumentException;
 use TDD\AddCoin;
 use TDD\Balance;
+use TDD\Client\Transformer\ApiResponse;
 use TDD\Repositories\ProductRepository;
 use TDD\VendingMachine;
 use PHPUnit\Framework\TestCase;
@@ -28,6 +30,9 @@ class VendingMachineTest extends TestCase
 
     protected function setUp(): void
     {
+        $dotenv = Dotenv::createImmutable(__DIR__ . '/../../');
+        $dotenv->safeLoad();
+
         $this->balance = new Balance();
         $this->coin = new AddCoin($this->balance);
         $this->repository = new ProductRepository();
