@@ -7,19 +7,27 @@ namespace Test\Unit;
 use PHPUnit\Framework\TestCase;
 use TDD\AddCoin;
 use TDD\Balance;
+use TDD\Client\Client;
+use TDD\Exceptions\CoinNotAccepted;
 
 class AddCoinTest extends TestCase
 {
     private const PENCE = 'pence';
+
     private const POUND = 'pound';
-    private const ONE_POUND_TO_PENCES = 100;
-    private const ZERO_BALANCE = 0;
+
+    private const COIN_NOT_ACCEPTED_MESSAGE = 'This coin not accepted!';
+
     private AddCoin $coin;
+
     private Balance $balance;
+
+    private Client $client;
 
     public function setUp(): void
     {
-        $this->balance = new Balance();
+        $this->client = $this->createMock(Client::class);
+        $this->balance = new Balance($this->client);
         $this->coin = new AddCoin($this->balance);
     }
 
@@ -33,69 +41,49 @@ class AddCoinTest extends TestCase
         $this->assertInstanceOf(Balance::class, $this->balance);
     }
 
-    public function test_add_coin_should_accept_1_pence_coin(): void
+    public function test_should_initialize_client_class(): void
     {
-        $add = $this->coin->add(AddCoin::ALLOWED_COINS[self::PENCE]['ONE_PENCE']);
-
-        $this->assertTrue($add);
-
-        $balance = $this->balance->getBalance();
-
-        $this->assertSame(AddCoin::ALLOWED_COINS[self::PENCE]['ONE_PENCE'], $balance);
+        $this->assertInstanceOf(Client::class, $this->client);
     }
 
-    public function test_add_coin_should_accept_5_pence_coin(): void
+    /**
+     * @dataProvider correctDataProvider
+     */
+    public function test_add_coin_should_accept_coin(int $number, string $type): void
     {
-        $add = $this->coin->add(AddCoin::ALLOWED_COINS[self::PENCE]['FIVE_PENCE']);
+        $add = $this->coin->add($number, $type);
 
         $this->assertTrue($add);
-
-        $balance = $this->balance->getBalance();
-
-        $this->assertSame(AddCoin::ALLOWED_COINS[self::PENCE]['FIVE_PENCE'], $balance);
     }
 
-    public function test_add_coin_should_accept_20_pence_coin(): void
+    /**
+     * @dataProvider badDataProvider
+     */
+    public function test_add_coin_should_throw_exception_if_coin_not_accepted(): void
     {
-        $add = $this->coin->add(AddCoin::ALLOWED_COINS[self::PENCE]['TWENTY_PENCE']);
+        $this->expectException(CoinNotAccepted::class);
+        $this->expectExceptionMessage(self::COIN_NOT_ACCEPTED_MESSAGE);
 
-        $this->assertTrue($add);
-
-        $balance = $this->balance->getBalance();
-
-        $this->assertSame(AddCoin::ALLOWED_COINS[self::PENCE]['TWENTY_PENCE'], $balance);
+        $this->coin->add(2);
     }
 
-    public function test_add_coin_should_accept_50_pence_coin(): void
+    public function correctDataProvider(): array
     {
-        $add = $this->coin->add(AddCoin::ALLOWED_COINS[self::PENCE]['FIFTY_PENCE']);
-
-        $this->assertTrue($add);
-
-        $balance = $this->balance->getBalance();
-
-        $this->assertSame(AddCoin::ALLOWED_COINS[self::PENCE]['FIFTY_PENCE'], $balance);
+        return [
+            [AddCoin::ALLOWED_COINS[self::PENCE]['ONE_PENCE'], self::PENCE],
+            [AddCoin::ALLOWED_COINS[self::PENCE]['FIVE_PENCE'], self::PENCE],
+            [AddCoin::ALLOWED_COINS[self::PENCE]['TWENTY_PENCE'], self::PENCE],
+            [AddCoin::ALLOWED_COINS[self::PENCE]['FIFTY_PENCE'], self::PENCE],
+            [AddCoin::ALLOWED_COINS[self::POUND]['ONE_POUND'], self::POUND]
+        ];
     }
 
-    public function test_add_coin_should_accept_1_pound_coin(): void
+    public function badDataProvider(): array
     {
-        $add = $this->coin->add(AddCoin::ALLOWED_COINS[self::POUND]['ONE_POUND'], self::POUND);
-
-        $this->assertTrue($add);
-
-        $balance = $this->balance->getBalance();
-
-        $this->assertSame(self::ONE_POUND_TO_PENCES, $balance);
-    }
-
-    public function test_add_coin_should_not_accept_2_pence_coin(): void
-    {
-        $add = $this->coin->add(2);
-
-        $this->assertFalse($add);
-
-        $balance = $this->balance->getBalance();
-
-        $this->assertSame(self::ZERO_BALANCE, $balance);
+        return [
+            [2, self::PENCE],
+            [6, self::PENCE],
+            [2, self::POUND]
+        ];
     }
 }

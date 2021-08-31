@@ -6,5 +6,5 @@ namespace TDD\Client\Transformer;
 
 interface ResponseInterface
 {
-    public function toArray(): ?array;
+    public function transform(\Psr\Http\Message\ResponseInterface $response): ?array;
 }

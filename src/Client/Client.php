@@ -19,17 +19,19 @@ class Client implements \TDD\Client\ClientInterface
     private ClientInterface $client;
 
     private int $vendingMachineId;
+    private ResponseInterface $transformer;
 
-    public function __construct(ClientInterface $client, int $vendingMachineId)
+    public function __construct(ClientInterface $client, ResponseInterface $transformer, int $vendingMachineId)
     {
         $this->client = $client;
         $this->vendingMachineId = $vendingMachineId;
+        $this->transformer = $transformer;
     }
 
     /**
      * @throws RequestFailedException
      */
-    public function getBalance(): ?ResponseInterface
+    public function getBalance(): ?array
     {
         $url = '/api/vending-machine/balance/' . $this->vendingMachineId;
 
@@ -39,7 +41,7 @@ class Client implements \TDD\Client\ClientInterface
     /**
      * @throws RequestFailedException
      */
-    public function addBalance(int $amount): ?ResponseInterface
+    public function addBalance(int $amount): ?array
     {
         $url = '/api/vending-machine/balance/add/' . $this->vendingMachineId;
 
@@ -55,7 +57,7 @@ class Client implements \TDD\Client\ClientInterface
     /**
      * @throws RequestFailedException
      */
-    public function selectProduct(int $pence): ?ResponseInterface
+    public function selectProduct(int $pence): ?array
     {
         $url = '/api/vending-machine/select-product/' . $this->vendingMachineId;
 
@@ -71,7 +73,7 @@ class Client implements \TDD\Client\ClientInterface
     /**
      * @throws RequestFailedException
      */
-    public function refund(): ?ResponseInterface
+    public function refund(): ?array
     {
         $url = '/api/vending-machine/refund/' . $this->vendingMachineId;
 
@@ -81,10 +83,10 @@ class Client implements \TDD\Client\ClientInterface
     /**
      * @throws RequestFailedException
      */
-    private function makeRequest(string $method, string $url, array $params = []): ?ResponseInterface
+    private function makeRequest(string $method, string $url, array $params = []): ?array
     {
         try {
-            return ApiResponse::fromResponse($this->client->request($method, $url, $params));
+            return $this->transformer->transform($this->client->request($method, $url, $params));
         } catch (GuzzleException $e) {
             throw new RequestFailedException($e->getMessage());
         }

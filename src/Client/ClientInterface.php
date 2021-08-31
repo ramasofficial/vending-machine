@@ -8,11 +8,11 @@ use TDD\Client\Transformer\ResponseInterface;
 
 interface ClientInterface
 {
-    public function getBalance(): ?ResponseInterface;
+    public function getBalance(): ?array;
 
-    public function addBalance(int $amount): ?ResponseInterface;
+    public function addBalance(int $amount): ?array;
 
-    public function selectProduct(int $pence): ?ResponseInterface;
+    public function selectProduct(int $pence): ?array;
 
-    public function refund(): ?ResponseInterface;
+    public function refund(): ?array;
 }

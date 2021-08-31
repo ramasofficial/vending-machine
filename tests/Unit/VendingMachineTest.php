@@ -4,39 +4,40 @@ declare(strict_types=1);
 
 namespace Test\Unit;
 
-use Dotenv\Dotenv;
-use InvalidArgumentException;
 use TDD\AddCoin;
 use TDD\Balance;
-use TDD\Client\Transformer\ApiResponse;
+use TDD\Client\Client;
+use TDD\Exceptions\DoesntHaveEnoughMoney;
 use TDD\Repositories\ProductRepository;
 use TDD\VendingMachine;
 use PHPUnit\Framework\TestCase;
 
 class VendingMachineTest extends TestCase
 {
-    private const CANDY = 10;
     private const SNACKS = 50;
+    private const BOTTLE_OF_WATER = 100;
     private const ZERO_BALANCE = 0;
     private const PENCE = 'pence';
-    private const POUND = 'pound';
-    private const FORTY = 40;
     private const ONE_HUNDRED = 100;
+    private const EXPECTED_PRODUCT = ['selected_product' => 'BOTTLE OF WATER', 'current_balance' => 200];
+    private const EXPECTED_PRODUCT_2 = ['selected_product' => 'SNACKS', 'current_balance' => 150];
+    private const FIFTY_PENCES = 50;
+    private const THREE_HUNDRED_PENCES = 300;
+    private const TWO_HUNDRED_PENCES = 200;
 
     private VendingMachine $vendingMachine;
     private AddCoin $coin;
     private Balance $balance;
     private ProductRepository $repository;
+    private Client $client;
 
     protected function setUp(): void
     {
-        $dotenv = Dotenv::createImmutable(__DIR__ . '/../../');
-        $dotenv->safeLoad();
-
-        $this->balance = new Balance();
+        $this->client = $this->createMock(Client::class);
+        $this->balance = new Balance($this->client);
         $this->coin = new AddCoin($this->balance);
         $this->repository = new ProductRepository();
-        $this->vendingMachine = new VendingMachine($this->coin, $this->balance, $this->repository);
+        $this->vendingMachine = new VendingMachine($this->coin, $this->balance, $this->repository, $this->client);
     }
 
     public function test_should_initialize_vending_machine_class(): void
@@ -61,122 +62,103 @@ class VendingMachineTest extends TestCase
 
     public function test_can_add_coin_to_vending_machine(): void
     {
-        $this->vendingMachine->add(AddCoin::ALLOWED_COINS[self::PENCE]['TWENTY_PENCE']);
+        $actual = $this->vendingMachine->add(AddCoin::ALLOWED_COINS[self::PENCE]['ONE_PENCE']);
 
-        $balance = $this->balance->getBalance();
-
-        $this->assertSame(AddCoin::ALLOWED_COINS[self::PENCE]['TWENTY_PENCE'], $balance);
+        $this->assertTrue($actual);
     }
 
     public function test_can_check_balance_in_vending_machine(): void
     {
-        $this->vendingMachine->add(AddCoin::ALLOWED_COINS[self::PENCE]['TWENTY_PENCE']);
-        $this->vendingMachine->add(AddCoin::ALLOWED_COINS[self::PENCE]['TWENTY_PENCE']);
+        $this->client->method('getBalance')->willReturn(['balance' => self::ONE_HUNDRED]);
 
-        $balance = $this->vendingMachine->checkBalance();
+        $this->vendingMachine->add(AddCoin::ALLOWED_COINS[self::PENCE]['FIFTY_PENCE']);
+        $this->vendingMachine->add(AddCoin::ALLOWED_COINS[self::PENCE]['FIFTY_PENCE']);
 
-        $this->assertSame(self::FORTY, $balance);
+        $actual = $this->vendingMachine->checkBalance();
+
+        $this->assertSame(self::ONE_HUNDRED, $actual);
     }
 
     public function test_user_can_select_product_and_vending_machine_returns_selected_product(): void
     {
-        $this->vendingMachine->add(AddCoin::ALLOWED_COINS[self::PENCE]['TWENTY_PENCE']);
-        $this->vendingMachine->add(AddCoin::ALLOWED_COINS[self::PENCE]['TWENTY_PENCE']);
+        $this->client->method('getBalance')->willReturn(['balance' => self::THREE_HUNDRED_PENCES]);
+        $this->client->method('selectProduct')->willReturn(self::EXPECTED_PRODUCT);
 
-        $product = $this->vendingMachine->selectProduct(self::CANDY);
+        $actual = $this->vendingMachine->selectProduct(self::BOTTLE_OF_WATER);
 
-        $this->assertContains(ProductRepository::PRODUCTS[self::CANDY], $product);
-
-        $this->assertArrayHasKey('selected_product', $product);
+        $this->assertSame(self::EXPECTED_PRODUCT, $actual);
     }
 
     public function test_user_can_select_multiple_products_with_existing_balance(): void
     {
-        $this->vendingMachine->add(AddCoin::ALLOWED_COINS[self::PENCE]['FIFTY_PENCE']);
-        $this->vendingMachine->add(AddCoin::ALLOWED_COINS[self::PENCE]['FIFTY_PENCE']);
+        $this->client->method('getBalance')->will($this->onConsecutiveCalls(['balance' => self::THREE_HUNDRED_PENCES], ['balance' => self::TWO_HUNDRED_PENCES]));
+        $this->client->method('selectProduct')->will($this->onConsecutiveCalls(self::EXPECTED_PRODUCT, self::EXPECTED_PRODUCT_2));
 
-        $this->vendingMachine->selectProduct(self::CANDY);
-        $this->vendingMachine->selectProduct(self::SNACKS);
+        $actual = $this->vendingMachine->selectProduct(self::BOTTLE_OF_WATER);
+        $actualSecond = $this->vendingMachine->selectProduct(self::SNACKS);
 
-        $refund = $this->vendingMachine->refund();
-
-        $this->assertSame(self::FORTY, $refund);
+        $this->assertSame(self::EXPECTED_PRODUCT, $actual);
+        $this->assertSame(self::EXPECTED_PRODUCT_2, $actualSecond);
     }
 
     public function test_user_dont_have_enough_money_to_buy_product(): void
     {
-        $this->expectException(InvalidArgumentException::class);
-        $this->expectExceptionMessage('User does not have enough money to buy this product!');
+        $this->expectException(DoesntHaveEnoughMoney::class);
 
-        $this->vendingMachine->add(AddCoin::ALLOWED_COINS[self::PENCE]['ONE_PENCE']);
+        $this->client->method('getBalance')->willReturn(['balance' => self::FIFTY_PENCES]);
 
-        $this->vendingMachine->selectProduct(self::CANDY);
+        $this->vendingMachine->selectProduct(self::BOTTLE_OF_WATER);
     }
 
     public function test_reduce_vending_machine_balance_after_user_bought_product(): void
     {
-        $this->vendingMachine->add(AddCoin::ALLOWED_COINS[self::PENCE]['FIVE_PENCE']);
-        $this->vendingMachine->add(AddCoin::ALLOWED_COINS[self::PENCE]['FIVE_PENCE']);
-        $this->vendingMachine->add(AddCoin::ALLOWED_COINS[self::PENCE]['FIVE_PENCE']);
+        $this->client->method('getBalance')->will($this->onConsecutiveCalls(['balance' => self::THREE_HUNDRED_PENCES], ['balance' => self::TWO_HUNDRED_PENCES]));
+        $this->client->method('selectProduct')->will($this->onConsecutiveCalls(self::EXPECTED_PRODUCT, self::EXPECTED_PRODUCT_2));
 
-        $this->vendingMachine->selectProduct(self::CANDY);
+        $this->vendingMachine->selectProduct(self::BOTTLE_OF_WATER);
 
-        $balance = $this->vendingMachine->checkBalance();
+        $actual = $this->vendingMachine->checkBalance();
 
-        $this->assertSame(5, $balance);
+        $this->assertSame(self::TWO_HUNDRED_PENCES, $actual);
     }
 
     public function test_user_can_get_refund_if_canceling_request(): void
     {
-        $this->vendingMachine->add(AddCoin::ALLOWED_COINS[self::PENCE]['FIVE_PENCE']);
-        $this->vendingMachine->add(AddCoin::ALLOWED_COINS[self::PENCE]['FIVE_PENCE']);
+        $this->client->method('refund')->willReturn(['refund' => self::TWO_HUNDRED_PENCES]);
 
-        $refund = $this->vendingMachine->refund();
+        $actual = $this->vendingMachine->refund();
 
-        $this->assertSame(10, $refund);
+        $this->assertSame(self::TWO_HUNDRED_PENCES, $actual['refund']);
     }
 
     public function test_vending_machine_is_empty_balance_if_user_took_refund(): void
     {
-        $this->vendingMachine->add(AddCoin::ALLOWED_COINS[self::PENCE]['FIVE_PENCE']);
-        $this->vendingMachine->add(AddCoin::ALLOWED_COINS[self::PENCE]['FIVE_PENCE']);
+        $this->client->method('getBalance')->willReturn(['balance' => self::ZERO_BALANCE]);
+        $this->client->method('refund')->willReturn(['refund' => self::TWO_HUNDRED_PENCES]);
 
         $this->vendingMachine->refund();
 
-        $balance = $this->vendingMachine->checkBalance();
+        $actual = $this->vendingMachine->checkBalance();
 
-        $this->assertSame(self::ZERO_BALANCE, $balance);
+        $this->assertSame(self::ZERO_BALANCE, $actual);
     }
 
     public function test_vending_machine_return_selected_product_and_remaining_change(): void
     {
-        $this->vendingMachine->add(AddCoin::ALLOWED_COINS[self::PENCE]['FIVE_PENCE']);
-        $this->vendingMachine->add(AddCoin::ALLOWED_COINS[self::PENCE]['FIVE_PENCE']);
-        $this->vendingMachine->add(AddCoin::ALLOWED_COINS[self::POUND]['ONE_POUND'], self::POUND);
+        $this->client->method('getBalance')->willReturn(['balance' => self::THREE_HUNDRED_PENCES]);
+        $this->client->method('selectProduct')->willReturn(self::EXPECTED_PRODUCT);
 
-        $product = $this->vendingMachine->selectProduct(self::CANDY);
+        $actual = $this->vendingMachine->selectProduct(self::BOTTLE_OF_WATER);
 
-        $this->assertContains(ProductRepository::PRODUCTS[self::CANDY], $product);
-
-        $this->assertArrayHasKey('selected_product', $product);
-
-        $this->assertContains(self::ONE_HUNDRED, $product);
-
-        $this->assertArrayHasKey('balance', $product);
+        $this->assertSame(self::EXPECTED_PRODUCT, $actual);
     }
 
     public function test_vending_machine_can_be_reset(): void
     {
-        $this->vendingMachine->add(AddCoin::ALLOWED_COINS[self::POUND]['ONE_POUND'], self::POUND);
+        $this->client->method('refund')->willReturn(['refund' => self::TWO_HUNDRED_PENCES]);
 
-        $reset = $this->vendingMachine->reset();
+        $actual = $this->vendingMachine->reset();
 
-        $this->assertContains(self::ONE_HUNDRED, $reset);
-
-        $this->assertArrayHasKey('balance', $reset);
-
-        $balance = $this->vendingMachine->checkBalance();
-
-        $this->assertSame(self::ZERO_BALANCE, $balance);
+        $this->assertSame(self::TWO_HUNDRED_PENCES, $actual['refund']);
     }
 }

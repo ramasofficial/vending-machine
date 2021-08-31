@@ -10,25 +10,20 @@ class ApiResponse implements \TDD\Client\Transformer\ResponseInterface
 {
     private ResponseInterface $response;
 
-    public function __construct(ResponseInterface $response)
+    public function transform(ResponseInterface $response): ?array
     {
-        $this->response = $response;
+        $body = $this->fromResponse($response);
+
+        return $this->toArray($body);
     }
 
-    public static function fromResponse(ResponseInterface $response): self
+    private function toArray(string $string): ?array
     {
-        return new self($response);
+        return json_decode($string, true);
     }
 
-    public function toArray(): ?array
+    private function fromResponse(ResponseInterface $response): string
     {
-        $body = $this->fromRequest();
-
-        return json_decode($body, true);
-    }
-
-    private function fromRequest(): string
-    {
-        return $this->response->getBody()->getContents();
+        return $response->getBody()->getContents();
     }
 }
