@@ -15,9 +15,11 @@ $client = new \TDD\Client\Client(new \GuzzleHttp\Client(
     ['base_uri' => $_ENV['API_URL']]
 ), new \TDD\Client\Transformer\ApiResponse(), 1);
 
+$balance = new Balance($client);
+
 $vendingMachine = new VendingMachine(
-    new AddCoin(new Balance($client)),
-    new Balance($client),
+    new AddCoin($balance),
+    $balance,
     new ProductRepository(),
     $client);
 
