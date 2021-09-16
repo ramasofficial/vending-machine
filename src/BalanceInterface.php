@@ -8,7 +8,5 @@ interface BalanceInterface
 {
     public function addBalance(int $number): bool;
 
-    public function setBalance(int $number): bool;
-
     public function getBalance(): int;
 }

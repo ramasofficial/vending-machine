@@ -9,7 +9,7 @@ use TDD\Exceptions\ProductNotFoundException;
 class ProductRepository implements ProductRepositoryInterface
 {
     public const PRODUCTS = [
-        10 => 'Candy',
+        10 => 'CANDY',
         50 => 'SNACKS',
         75 => 'NUTS',
         100 => 'BOTTLE WATER',

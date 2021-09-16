@@ -4,7 +4,8 @@ declare(strict_types=1);
 
 namespace TDD;
 
-use InvalidArgumentException;
+use TDD\Client\ClientInterface;
+use TDD\Exceptions\DoesntHaveEnoughMoney;
 use TDD\Repositories\ProductRepositoryInterface;
 
 class VendingMachine
@@ -15,11 +16,14 @@ class VendingMachine
 
     private ProductRepositoryInterface $repository;
 
-    public function __construct(AddCoinInterface $coin, BalanceInterface $balance, ProductRepositoryInterface $repository)
+    private ClientInterface $client;
+
+    public function __construct(AddCoinInterface $coin, BalanceInterface $balance, ProductRepositoryInterface $repository, ClientInterface $client)
     {
         $this->coin = $coin;
         $this->balance = $balance;
         $this->repository = $repository;
+        $this->client = $client;
     }
 
     public function add(int $coin, $type = 'pence'): bool
@@ -37,37 +41,24 @@ class VendingMachine
         $product = $this->repository->getProductByPence($pences);
 
         if(!$this->haveEnoughMoney($product['price'])) {
-            throw new InvalidArgumentException('User does not have enough money to buy this product!');
+            throw new DoesntHaveEnoughMoney('User does not have enough money to buy this product!');
         }
 
-        $balance = $this->balance->getBalance() - $pences;
-
-        $this->balance->setBalance($balance);
-
-        return [
-            'selected_product' => $product['product'],
-            'balance' => $this->balance->getBalance()
-        ];
+        return $this->client->selectProduct($pences);
     }
 
-    public function refund(): int
+    public function refund(): ?array
     {
-        $balance = $this->balance->getBalance();
-
-        $this->balance->setBalance(0);
-
-        return $balance;
+        return $this->client->refund();
     }
 
     public function reset(): ?array
     {
-        return [
-            'balance' => $this->refund()
-        ];
+        return $this->refund();
     }
 
     private function haveEnoughMoney(int $price): bool
     {
-        return $price < $this->balance->getBalance();
+        return $price <= $this->balance->getBalance();
     }
 }

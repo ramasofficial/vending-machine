@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace TDD;
 
+use TDD\Exceptions\CoinNotAccepted;
+
 class AddCoin implements AddCoinInterface
 {
     private BalanceInterface $balance;
@@ -27,20 +29,15 @@ class AddCoin implements AddCoinInterface
 
     public function add(int $coin, string $type = 'pence'): bool
     {
-        if($this->doesCoinAccept($coin, $type)) {
-
-            if($type === 'pound') {
-                $this->balance->addBalance($coin * 100);
-            }
-
-            if($type === 'pence') {
-                $this->balance->addBalance($coin);
-            }
-
-            return true;
+        if(!$this->doesCoinAccept($coin, $type) || !array_key_exists($type, self::ALLOWED_COINS)) {
+            throw new CoinNotAccepted('This coin not accepted!');
         }
 
-        return false;
+        if($type === 'pound') {
+            $coin *= 100;
+        }
+
+        return $this->balance->addBalance($coin);
     }
 
     private function doesCoinAccept(float $coin, string $type): bool
